@@ -31,7 +31,7 @@ public class ProductController {
             ) {
         List<Product> products = productService.getAllProducts(category, brand, active);
 
-        List<ProductResponse> productResponses = products.stream().map(productMapper::toDto).toList();
+        List<ProductResponse> productResponses = products.stream().map(productMapper::toResponse).toList();
 
         return ResponseEntity.ok(productResponses);
     }
@@ -43,7 +43,7 @@ public class ProductController {
         AddProductRequest request = productMapper.toAddProductRequest(addProductRequestDto);
 
         Product addedProduct = productService.addProduct(request);
-        ProductResponse productResponse = productMapper.toDto(addedProduct);
+        ProductResponse productResponse = productMapper.toResponse(addedProduct);
 
         return new ResponseEntity<>(productResponse, HttpStatus.CREATED);
     }
@@ -57,7 +57,7 @@ public class ProductController {
 
         Product updatedProduct = productService.updateProduct(productId, request);
 
-        ProductResponse updatedProductResponse = productMapper.toDto(updatedProduct);
+        ProductResponse updatedProductResponse = productMapper.toResponse(updatedProduct);
 
         return ResponseEntity.ok(updatedProductResponse);
     }
