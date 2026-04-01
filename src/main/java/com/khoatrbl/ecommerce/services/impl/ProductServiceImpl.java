@@ -64,6 +64,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product getProductById(UUID productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product does not exist with id: " + productId));
+    }
+
+    @Override
     public Product addProduct(AddProductRequest request) {
         Product productToAdd = Product.builder()
                 .productName(request.getProductName())

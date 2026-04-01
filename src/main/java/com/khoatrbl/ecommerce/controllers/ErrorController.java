@@ -24,7 +24,8 @@ public class ErrorController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleException(Exception ex) {
-        log.error("Caught exception {}", String.valueOf(ex));
+        log.error("Caught exception: {}", String.valueOf(ex));
+        log.error("Caught exception during request processing: ", ex);
 
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -36,6 +37,7 @@ public class ErrorController {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Caught exception during request processing", ex);
 
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
@@ -48,6 +50,8 @@ public class ErrorController {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
+
+        log.error("Caught exception during request processing", ex);
 
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -68,6 +72,18 @@ public class ErrorController {
         }
 
         // Fallback for other malformed JSON errors
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error("Caught exception during request processing", ex);
+
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .build();
+
         return ResponseEntity.badRequest().body(error);
     }
 }

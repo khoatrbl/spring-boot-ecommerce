@@ -13,7 +13,7 @@ public interface ProductService {
 
     List<Product> getAllProducts(ProductCategory category, ProductBrand brand, Boolean active);
 
-//    List<Product> getProductsByCategory(ProductCategory category);
+    Product getProductById(UUID productId);
 
     Product addProduct(AddProductRequest request);
 

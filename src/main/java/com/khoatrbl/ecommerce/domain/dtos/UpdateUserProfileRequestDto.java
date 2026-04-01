@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class UpdateUserProfileRequestDto {
     @NotBlank(message = "Display name is required!")
     @Size(min = 3, max = 40, message = "Display name must be between {min} and {max} characters")
-    @Pattern(regexp = "^[a-zA-Z ]*$", message = "Display name must only contain alphabetical letters!")
+    @Pattern(regexp = "^[a-zA-Z ]*$", message = "Display name must only contain alphabetical letters and whitespaces!")
     private String displayName;
 
     @NotBlank(message = "Street is required!")

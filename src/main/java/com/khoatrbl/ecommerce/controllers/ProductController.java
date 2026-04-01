@@ -19,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/products")
+
 public class ProductController {
     private final ProductService productService;
     private final ProductMapper productMapper;
@@ -34,6 +35,15 @@ public class ProductController {
         List<ProductResponse> productResponses = products.stream().map(productMapper::toResponse).toList();
 
         return ResponseEntity.ok(productResponses);
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable("id") UUID productId) {
+        Product product = productService.getProductById(productId);
+
+        ProductResponse productResponse = productMapper.toResponse(product);
+
+        return ResponseEntity.ok(productResponse);
     }
 
     @PostMapping
