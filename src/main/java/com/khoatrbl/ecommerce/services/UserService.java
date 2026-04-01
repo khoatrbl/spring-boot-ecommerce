@@ -1,7 +1,8 @@
 package com.khoatrbl.ecommerce.services;
 
 import com.khoatrbl.ecommerce.domain.dtos.RegisterRequest;
-import com.khoatrbl.ecommerce.domain.dtos.UpdateUserRequest;
+import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileAsAdminRequest;
+import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileRequest;
 import com.khoatrbl.ecommerce.domain.entities.User;
 import com.khoatrbl.ecommerce.domain.entities.UserRole;
 
@@ -13,7 +14,11 @@ public interface UserService {
 
     List<User> getAllUsers(UserRole role);
 
-    User updateUserProfile(UUID userId, UpdateUserRequest request);
+    User updateUserProfileAsUser(UUID userId, UpdateUserProfileRequest request);
+
+    User updateUserProfileAsAdmin(UUID userId, UpdateUserProfileAsAdminRequest request);
+
+    void deleteUserById(UUID userId);
 
     User registerUser(RegisterRequest request);
 

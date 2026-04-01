@@ -1,7 +1,8 @@
 package com.khoatrbl.ecommerce.services.impl;
 
 import com.khoatrbl.ecommerce.domain.dtos.RegisterRequest;
-import com.khoatrbl.ecommerce.domain.dtos.UpdateUserRequest;
+import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileAsAdminRequest;
+import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileRequest;
 import com.khoatrbl.ecommerce.domain.entities.User;
 import com.khoatrbl.ecommerce.domain.entities.UserRole;
 import com.khoatrbl.ecommerce.repositories.UserRepository;
@@ -36,16 +37,55 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUserProfile(UUID userId, UpdateUserRequest request) {
+    public User updateUserProfileAsUser(UUID userId, UpdateUserProfileRequest request) {
+        return updateUserProfile(
+                userId,
+                request.getDisplayName(),
+                request.getStreet(),
+                request.getWard(),
+                request.getCity(),
+                null,
+                false);
+    }
+
+    @Override
+    public User updateUserProfileAsAdmin(UUID userId, UpdateUserProfileAsAdminRequest request) {
+        return updateUserProfile(
+                userId,
+                request.getDisplayName(),
+                request.getStreet(),
+                request.getWard(),
+                request.getCity(),
+                request.getRole(),
+                true);
+    }
+
+    private User updateUserProfile(UUID userId,
+                                   String displayName,
+                                   String street,
+                                   String ward,
+                                   String city,
+                                   UserRole role,
+                                   boolean canChangeRole) {
+
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + userId));
 
-        existingUser.setDisplayName(request.getDisplayName());
-        existingUser.setStreet(request.getStreet());
-        existingUser.setWard(request.getWard());
-        existingUser.setCity(request.getCity());
+        existingUser.setDisplayName(displayName);
+        existingUser.setStreet(street);
+        existingUser.setWard(ward);
+        existingUser.setCity(city);
+
+        if (canChangeRole && role != null) {
+            existingUser.setRole(role);
+        }
 
         return userRepository.save(existingUser);
+    }
+
+    @Override
+    public void deleteUserById(UUID userId) {
+        userRepository.deleteById(userId);
     }
 
     @Override
