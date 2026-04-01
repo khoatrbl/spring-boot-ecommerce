@@ -1,5 +1,6 @@
 package com.khoatrbl.ecommerce.services.impl;
 
+import com.khoatrbl.ecommerce.domain.dtos.ChangePasswordRequest;
 import com.khoatrbl.ecommerce.domain.dtos.RegisterRequest;
 import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileAsAdminRequest;
 import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileRequest;
@@ -118,6 +119,31 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(newUser);
 
     }
+
+    @Override
+    public User changePassword(UUID userId, ChangePasswordRequest request) {
+        User existingUser = userRepository.findPasswordById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist with id: " + userId));
+
+        String oldPassword = request.getOldPassword();
+        String newPassword = request.getNewPassword();
+        String confirmedPassword = request.getConfirmedPassword();
+
+        if (passwordEncoder.matches(oldPassword, existingUser.getPassword())) {
+            if (newPassword.equals(confirmedPassword)) {
+                String encodedPassword = encodePassword(newPassword);
+                existingUser.setPassword(encodedPassword);
+
+            } else {
+                throw new IllegalArgumentException("Passwords does not match");
+            }
+        } else {
+            throw new IllegalArgumentException("Old password does not match.");
+        }
+
+        return userRepository.save(existingUser);
+    }
+
 
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);

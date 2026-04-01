@@ -1,5 +1,6 @@
 package com.khoatrbl.ecommerce.services;
 
+import com.khoatrbl.ecommerce.domain.dtos.ChangePasswordRequest;
 import com.khoatrbl.ecommerce.domain.dtos.RegisterRequest;
 import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileAsAdminRequest;
 import com.khoatrbl.ecommerce.domain.dtos.UpdateUserProfileRequest;
@@ -21,6 +22,8 @@ public interface UserService {
     void deleteUserById(UUID userId);
 
     User registerUser(RegisterRequest request);
+
+    User changePassword(UUID userId, ChangePasswordRequest request);
 
 
 }

@@ -1,9 +1,6 @@
 package com.khoatrbl.ecommerce.mappers;
 
-import com.khoatrbl.ecommerce.domain.dtos.LogInRequest;
-import com.khoatrbl.ecommerce.domain.dtos.LogInRequestDto;
-import com.khoatrbl.ecommerce.domain.dtos.RegisterRequest;
-import com.khoatrbl.ecommerce.domain.dtos.RegisterRequestDto;
+import com.khoatrbl.ecommerce.domain.dtos.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -12,4 +9,6 @@ public interface AuthMapper {
     LogInRequest toLogInRequest(LogInRequestDto dto);
 
     RegisterRequest toRegisterRequest(RegisterRequestDto dto);
+
+    ChangePasswordRequest toChangePasswordRequest(ChangePasswordRequestDto dto);
 }
