@@ -14,9 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UpdateCartItemRequestDto {
-    @NotNull(message = "Product ID is required!")
-    private UUID productId;
-
     @Min(value = 1, message = "Quantity must be greater than {value}!")
     private int quantity;
 }

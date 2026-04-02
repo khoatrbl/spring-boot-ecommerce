@@ -62,21 +62,44 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart updateQuantityOfItem(UUID userId, UpdateCartItemRequest request) {
+    public Cart updateQuantityOfItem(UUID userId, UUID productId, UpdateCartItemRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        int quantity = request.getQuantity();
+
+        Cart existingCart = cartRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart does not exist with id: " + userId));
+
+        // if the update quantity = 0
+        // this means the user want to delete the item from the cart
+        if (quantity == 0) {
+            deleteItem(userId, productId);
+            return existingCart;
+        }
+
+        // Get the CartItem with the productId as requested
+        // Update the quantity of that CartItem as requested
+        Map<UUID, CartItem> currentItems = existingCart.getItems();
+        CartItem itemToUpdate = currentItems.get(productId);
+        itemToUpdate.setQuantity(quantity);
+
+        existingCart.setUpdatedAt(now);
+
+        return cartRepository.save(existingCart);
+    }
+
+    @Override
+    public void deleteItem(UUID userId, UUID productId) {
         LocalDateTime now = LocalDateTime.now();
 
         Cart existingCart = cartRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Cart does not exist with id: " + userId));
 
-        // Get the CartItem with the productId as requested
-        // Update the quantity of that CartItem as requested
         Map<UUID, CartItem> currentItems = existingCart.getItems();
-        CartItem itemToUpdate = currentItems.get(request.getProductId());
-        itemToUpdate.setQuantity(request.getQuantity());
+        currentItems.remove(productId);
 
         existingCart.setUpdatedAt(now);
 
-        return cartRepository.save(existingCart);
+        cartRepository.save(existingCart);
     }
 
 

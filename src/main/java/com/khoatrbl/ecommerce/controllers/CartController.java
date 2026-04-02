@@ -2,7 +2,6 @@ package com.khoatrbl.ecommerce.controllers;
 
 import com.khoatrbl.ecommerce.domain.dtos.*;
 import com.khoatrbl.ecommerce.domain.entities.Cart;
-import com.khoatrbl.ecommerce.domain.entities.CartItem;
 import com.khoatrbl.ecommerce.mappers.CartMapper;
 import com.khoatrbl.ecommerce.services.CartService;
 import jakarta.validation.Valid;
@@ -43,18 +42,29 @@ public class CartController {
         return new ResponseEntity<>(cartResponse, HttpStatus.CREATED);
     }
 
-    @PatchMapping
+    @PatchMapping(path = "/{id}")
     public ResponseEntity<CartResponse> updateCartItem(
             @RequestAttribute("userId") UUID userId,
+            @PathVariable("id") UUID productId,
             @Valid @RequestBody UpdateCartItemRequestDto updateCartItemRequestDto) {
 
         UpdateCartItemRequest request = cartMapper.toUpdateCartItemRequest(updateCartItemRequestDto);
 
-        Cart cart = cartService.updateQuantityOfItem(userId, request);
+        Cart cart = cartService.updateQuantityOfItem(userId, productId, request);
 
         CartResponse cartResponse = cartMapper.toCartResponse(cart);
 
         return ResponseEntity.ok(cartResponse);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteCartItem(
+            @RequestAttribute("userId") UUID userId,
+            @PathVariable("id") UUID productId) {
+
+        cartService.deleteItem(userId, productId);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
