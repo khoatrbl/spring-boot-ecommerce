@@ -1,8 +1,6 @@
 package com.khoatrbl.ecommerce.mappers;
 
-import com.khoatrbl.ecommerce.domain.dtos.AddCartItemRequest;
-import com.khoatrbl.ecommerce.domain.dtos.AddCartItemRequestDto;
-import com.khoatrbl.ecommerce.domain.dtos.CartResponse;
+import com.khoatrbl.ecommerce.domain.dtos.*;
 import com.khoatrbl.ecommerce.domain.entities.Cart;
 import com.khoatrbl.ecommerce.domain.entities.CartItem;
 import org.mapstruct.Mapper;
@@ -21,6 +19,8 @@ public interface CartMapper {
     CartResponse toCartResponse(Cart cart);
 
     AddCartItemRequest toAddCartItemRequest(AddCartItemRequestDto dto);
+
+    UpdateCartItemRequest toUpdateCartItemRequest(UpdateCartItemRequestDto dto);
 
     @Named("calculateTotalAmount")
     default BigDecimal calculateTotalAmount(Map<UUID, CartItem> items) {

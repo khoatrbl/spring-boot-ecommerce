@@ -1,6 +1,7 @@
 package com.khoatrbl.ecommerce.services.impl;
 
 import com.khoatrbl.ecommerce.domain.dtos.AddCartItemRequest;
+import com.khoatrbl.ecommerce.domain.dtos.UpdateCartItemRequest;
 import com.khoatrbl.ecommerce.domain.entities.Cart;
 import com.khoatrbl.ecommerce.domain.entities.CartItem;
 import com.khoatrbl.ecommerce.domain.entities.Product;
@@ -59,4 +60,24 @@ public class CartServiceImpl implements CartService {
 
         return cartRepository.save(existingCart);
     }
+
+    @Override
+    public Cart updateQuantityOfItem(UUID userId, UpdateCartItemRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+
+        Cart existingCart = cartRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart does not exist with id: " + userId));
+
+        // Get the CartItem with the productId as requested
+        // Update the quantity of that CartItem as requested
+        Map<UUID, CartItem> currentItems = existingCart.getItems();
+        CartItem itemToUpdate = currentItems.get(request.getProductId());
+        itemToUpdate.setQuantity(request.getQuantity());
+
+        existingCart.setUpdatedAt(now);
+
+        return cartRepository.save(existingCart);
+    }
+
+
 }

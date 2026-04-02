@@ -1,8 +1,6 @@
 package com.khoatrbl.ecommerce.controllers;
 
-import com.khoatrbl.ecommerce.domain.dtos.AddCartItemRequest;
-import com.khoatrbl.ecommerce.domain.dtos.AddCartItemRequestDto;
-import com.khoatrbl.ecommerce.domain.dtos.CartResponse;
+import com.khoatrbl.ecommerce.domain.dtos.*;
 import com.khoatrbl.ecommerce.domain.entities.Cart;
 import com.khoatrbl.ecommerce.domain.entities.CartItem;
 import com.khoatrbl.ecommerce.mappers.CartMapper;
@@ -43,6 +41,20 @@ public class CartController {
         CartResponse cartResponse = cartMapper.toCartResponse(cart);
 
         return new ResponseEntity<>(cartResponse, HttpStatus.CREATED);
+    }
+
+    @PatchMapping
+    public ResponseEntity<CartResponse> updateCartItem(
+            @RequestAttribute("userId") UUID userId,
+            @Valid @RequestBody UpdateCartItemRequestDto updateCartItemRequestDto) {
+
+        UpdateCartItemRequest request = cartMapper.toUpdateCartItemRequest(updateCartItemRequestDto);
+
+        Cart cart = cartService.updateQuantityOfItem(userId, request);
+
+        CartResponse cartResponse = cartMapper.toCartResponse(cart);
+
+        return ResponseEntity.ok(cartResponse);
     }
 
 }
