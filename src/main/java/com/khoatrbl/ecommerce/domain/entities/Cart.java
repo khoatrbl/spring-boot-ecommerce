@@ -36,5 +36,14 @@ public class Cart implements Serializable {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public void addCartItem(UUID productId, CartItem item) {
+        this.items.put(productId, item);
+    }
+
+    public void updateCartItem(UUID productId, int quantity) {
+        CartItem item = this.items.get(productId);
+        item.setQuantity(quantity);
+    }
+
 
 }

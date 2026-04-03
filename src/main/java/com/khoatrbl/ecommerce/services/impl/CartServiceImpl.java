@@ -56,7 +56,7 @@ public class CartServiceImpl implements CartService {
                         .updatedAt(now)
                         .build());
 
-        existingCart.getItems().put(productToAddId, cartItem);
+        existingCart.addCartItem(productToAddId, cartItem);
 
         return cartRepository.save(existingCart);
     }
@@ -78,10 +78,7 @@ public class CartServiceImpl implements CartService {
 
         // Get the CartItem with the productId as requested
         // Update the quantity of that CartItem as requested
-        Map<UUID, CartItem> currentItems = existingCart.getItems();
-        CartItem itemToUpdate = currentItems.get(productId);
-        itemToUpdate.setQuantity(quantity);
-
+        existingCart.updateCartItem(productId, quantity);
         existingCart.setUpdatedAt(now);
 
         return cartRepository.save(existingCart);
