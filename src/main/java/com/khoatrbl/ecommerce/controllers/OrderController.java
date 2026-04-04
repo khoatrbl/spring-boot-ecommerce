@@ -1,8 +1,6 @@
 package com.khoatrbl.ecommerce.controllers;
 
-import com.khoatrbl.ecommerce.domain.dtos.CreateOrderRequest;
-import com.khoatrbl.ecommerce.domain.dtos.CreateOrderRequestDto;
-import com.khoatrbl.ecommerce.domain.dtos.OrderResponse;
+import com.khoatrbl.ecommerce.domain.dtos.*;
 import com.khoatrbl.ecommerce.domain.entities.Orders;
 import com.khoatrbl.ecommerce.domain.entities.OrderStatus;
 import com.khoatrbl.ecommerce.mappers.OrderMapper;
@@ -46,5 +44,19 @@ public class OrderController {
         OrderResponse orderResponse = orderMapper.toOrderResponse(order);
 
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
+    }
+
+    @PatchMapping(path = "/admin/{userId}")
+    public ResponseEntity<OrderResponse> updateOrderStatus(
+            @PathVariable("userId") UUID userId,
+            @Valid @RequestBody UpdateOrderStatusRequestDto updateOrderStatusRequestDto) {
+
+        UpdateOrderStatusRequest request = orderMapper.toUpdateOrderRequest(updateOrderStatusRequestDto);
+
+        Orders order = orderService.updateOrderStatus(userId, request);
+        OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+
+        return ResponseEntity.ok(orderResponse);
+
     }
 }

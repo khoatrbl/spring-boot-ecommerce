@@ -1,6 +1,7 @@
 package com.khoatrbl.ecommerce.services.impl;
 
 import com.khoatrbl.ecommerce.domain.dtos.CreateOrderRequest;
+import com.khoatrbl.ecommerce.domain.dtos.UpdateOrderStatusRequest;
 import com.khoatrbl.ecommerce.domain.entities.*;
 import com.khoatrbl.ecommerce.repositories.CartRepository;
 import com.khoatrbl.ecommerce.repositories.OrderRepository;
@@ -70,11 +71,21 @@ public class OrderServiceImpl implements OrderService {
 
         // After order is saved
         // Delete the cart
-
         cartRepository.deleteById(userId);
 
         return orderRepository.save(order);
+    }
 
+    @Override
+    public Orders updateOrderStatus(UUID userId, UpdateOrderStatusRequest request) {
+        UUID orderId = request.getOrderId();
 
+        Orders order = orderRepository.findByUserIdAndOrderId(userId, orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found."));
+
+        OrderStatus status = request.getStatus();
+        order.setStatus(status);
+
+        return orderRepository.save(order);
     }
 }
