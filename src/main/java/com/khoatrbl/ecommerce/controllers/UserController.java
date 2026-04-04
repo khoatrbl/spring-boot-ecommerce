@@ -22,7 +22,6 @@ public class UserController {
     private final UserMapper userMapper;
     private final AuthMapper authMapper;
 
-    // TODO: Update this endpoint so that it's mapped with the current user obtained through the token
     @GetMapping(path = "/me/profile")
     public ResponseEntity<UserResponse> getUserProfile(@RequestAttribute("userId") UUID userId) {
         User foundUser = userService.getUserProfile(userId);

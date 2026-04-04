@@ -13,6 +13,5 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UpdateOrderStatusRequest {
-    private UUID orderId;
     private OrderStatus status;
 }

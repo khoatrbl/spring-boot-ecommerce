@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = "/api/v1/orders")
+@RequestMapping(path = "/api/v1")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
     private final OrderMapper orderMapper;
 
-    @GetMapping
+    @GetMapping(path = "/orders")
     public ResponseEntity<List<OrderResponse>> getAllOrders(
             @RequestAttribute("userId") UUID userId,
             @RequestParam(required = false) OrderStatus status) {
@@ -32,7 +32,7 @@ public class OrderController {
         return ResponseEntity.ok(orderResponses);
     }
 
-    @PostMapping
+    @PostMapping(path = "/orders")
     public ResponseEntity<OrderResponse> addCartToOrder(
             @RequestAttribute("userId") UUID userId,
             @Valid @RequestBody CreateOrderRequestDto createOrderRequestDto) {
@@ -46,17 +46,26 @@ public class OrderController {
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
     }
 
-    @PatchMapping(path = "/admin/{userId}")
+    @PatchMapping(path = "/admin/orders/{orderId}")
     public ResponseEntity<OrderResponse> updateOrderStatus(
-            @PathVariable("userId") UUID userId,
+            @PathVariable("orderId") UUID orderId,
             @Valid @RequestBody UpdateOrderStatusRequestDto updateOrderStatusRequestDto) {
 
         UpdateOrderStatusRequest request = orderMapper.toUpdateOrderRequest(updateOrderStatusRequestDto);
 
-        Orders order = orderService.updateOrderStatus(userId, request);
+        Orders order = orderService.updateOrderStatus(orderId, request);
         OrderResponse orderResponse = orderMapper.toOrderResponse(order);
 
         return ResponseEntity.ok(orderResponse);
 
+    }
+
+    @DeleteMapping(path = "/admin/orders/{orderId}")
+    public ResponseEntity<Void> deleteOrder(
+            @PathVariable("orderId") UUID orderId) {
+
+        orderService.deleteOrder(orderId);
+
+        return ResponseEntity.noContent().build();
     }
 }

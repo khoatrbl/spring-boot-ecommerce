@@ -77,15 +77,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Orders updateOrderStatus(UUID userId, UpdateOrderStatusRequest request) {
-        UUID orderId = request.getOrderId();
-
-        Orders order = orderRepository.findByUserIdAndOrderId(userId, orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found."));
+    public Orders updateOrderStatus(UUID orderId, UpdateOrderStatusRequest request) {
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order does not exist with id: " + orderId));
 
         OrderStatus status = request.getStatus();
         order.setStatus(status);
 
         return orderRepository.save(order);
+    }
+
+    @Override
+    public void deleteOrder(UUID orderId) {
+        orderRepository.deleteById(orderId);
     }
 }

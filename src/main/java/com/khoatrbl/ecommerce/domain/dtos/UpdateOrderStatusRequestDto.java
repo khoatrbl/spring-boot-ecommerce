@@ -14,9 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UpdateOrderStatusRequestDto {
-    @NotNull(message = "Order ID is required!")
-    private UUID orderId;
-
     @NotNull(message = "Order status is required!")
     private OrderStatus status;
 }

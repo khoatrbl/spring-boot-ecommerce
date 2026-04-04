@@ -18,13 +18,13 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/products")
+@RequestMapping(path = "/api/v1")
 
 public class ProductController {
     private final ProductService productService;
     private final ProductMapper productMapper;
 
-    @GetMapping
+    @GetMapping(path = "/products")
     public ResponseEntity<List<ProductResponse>> getAllProducts(
             @RequestParam(required = false)ProductCategory category,
             @RequestParam(required = false)ProductBrand brand,
@@ -37,7 +37,7 @@ public class ProductController {
         return ResponseEntity.ok(productResponses);
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/products/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable("id") UUID productId) {
         Product product = productService.getProductById(productId);
 
@@ -46,7 +46,7 @@ public class ProductController {
         return ResponseEntity.ok(productResponse);
     }
 
-    @PostMapping
+    @PostMapping(path = "/admin/products")
     public ResponseEntity<ProductResponse> addProduct(
             @Valid @RequestBody AddProductRequestDto addProductRequestDto) {
 
@@ -58,7 +58,7 @@ public class ProductController {
         return new ResponseEntity<>(productResponse, HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/{id}")
+    @PutMapping(path = "/admin/products/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("id") UUID productId,
             @Valid @RequestBody UpdateProductRequestDto updateProductRequestDto) {
@@ -72,7 +72,7 @@ public class ProductController {
         return ResponseEntity.ok(updatedProductResponse);
     }
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/admin/products/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable("id") UUID productId) {
         productService.deleteProduct(productId);
 

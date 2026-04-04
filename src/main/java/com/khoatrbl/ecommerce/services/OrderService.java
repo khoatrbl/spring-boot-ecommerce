@@ -11,5 +11,6 @@ import java.util.UUID;
 public interface OrderService {
     List<Orders> getAllOrders(UUID userId, OrderStatus status);
     Orders addCartToOrder(UUID userId, CreateOrderRequest request);
-    Orders updateOrderStatus(UUID userId, UpdateOrderStatusRequest request);
+    Orders updateOrderStatus(UUID orderId, UpdateOrderStatusRequest request);
+    void deleteOrder(UUID orderId);
 }
