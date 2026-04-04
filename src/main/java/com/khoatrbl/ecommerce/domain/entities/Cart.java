@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,21 @@ public class Cart implements Serializable {
     public void updateCartItem(UUID productId, int quantity) {
         CartItem item = this.items.get(productId);
         item.setQuantity(quantity);
+    }
+
+    public BigDecimal calculateTotalAmount() {
+        BigDecimal total = BigDecimal.valueOf(0);
+
+        for (UUID productId : items.keySet()) {
+            CartItem item = items.get(productId);
+            total = item.calculateSubTotal().add(total);
+        }
+
+        return total;
+    }
+
+    public int calculateTotalNumberOfItem() {
+        return this.items.size();
     }
 
 

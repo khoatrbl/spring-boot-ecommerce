@@ -14,8 +14,8 @@ import java.util.UUID;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CartMapper {
-    @Mapping(source = "items", target = "totalAmount", qualifiedByName = "calculateTotalAmount")
-    @Mapping(source = "items", target = "totalNumberOfItems", qualifiedByName = "calculateTotalNumberOfItems")
+    @Mapping(source = ".", target = "totalAmount", qualifiedByName = "calculateTotalAmount")
+    @Mapping(source = ".", target = "totalNumberOfItems", qualifiedByName = "calculateTotalNumberOfItems")
     CartResponse toCartResponse(Cart cart);
 
     AddCartItemRequest toAddCartItemRequest(AddCartItemRequestDto dto);
@@ -23,20 +23,13 @@ public interface CartMapper {
     UpdateCartItemRequest toUpdateCartItemRequest(UpdateCartItemRequestDto dto);
 
     @Named("calculateTotalAmount")
-    default BigDecimal calculateTotalAmount(Map<UUID, CartItem> items) {
-        BigDecimal total = BigDecimal.valueOf(0);
-
-        for (UUID productId : items.keySet()) {
-            CartItem item = items.get(productId);
-            total = item.calculateSubTotal().add(total);
-        }
-
-        return total;
+    default BigDecimal calculateTotalAmount(Cart cart) {
+        return cart.calculateTotalAmount();
     }
 
     @Named("calculateTotalNumberOfItems")
-    default int calculateTotalNumberOfItems(Map<UUID, CartItem> items) {
-        return items.size();
+    default int calculateTotalNumberOfItems(Cart cart) {
+        return cart.calculateTotalNumberOfItem();
     }
 
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -19,7 +20,7 @@ import java.util.UUID;
 public class OrderResponse {
     private UUID orderId;
     private User user;
-    private List<OrderItem> items;
+    private Map<UUID ,OrderItem> items;
     private BigDecimal total;
     private OrderStatus status;
     private String shippingAddress;

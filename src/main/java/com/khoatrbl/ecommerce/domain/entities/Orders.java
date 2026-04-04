@@ -5,10 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -30,7 +27,7 @@ public class Orders {
     // cascade = CascadeType.ALL means if we save the Order, it saves the items automatically
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<OrderItem> items = new ArrayList<>();
+    private Map<UUID, OrderItem> items = new HashMap<>();
 
     @Column(nullable = false)
     private BigDecimal total;
@@ -40,7 +37,13 @@ public class Orders {
     private OrderStatus status;
 
     @Column(nullable = false)
+    private String recipientName;
+
+    @Column(nullable = false)
     private String shippingAddress;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -73,7 +76,7 @@ public class Orders {
         return Objects.hash(orderId, user, total, status, shippingAddress, createdAt, updatedAt);
     }
 
-    public void addOrderItem(OrderItem item) {
-        this.items.add(item);
+    public void addOrderItem(UUID productId, OrderItem item) {
+        this.items.put(productId, item);
     }
 }
