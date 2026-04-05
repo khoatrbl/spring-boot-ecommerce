@@ -26,11 +26,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Orders> getAllOrders(UUID userId, OrderStatus status) {
-        if (status != null) {
+        if (userId != null && status != null) {
             return orderRepository.findAllByUserIdAndStatus(userId, status);
         }
 
-        return orderRepository.findAllByUserId(userId);
+        if (userId != null) {
+            return orderRepository.findAllByUserId(userId);
+        }
+
+        if (status != null) {
+            return orderRepository.findAllByStatus(status);
+        }
+
+        return orderRepository.findAll();
+
+
     }
 
     @Override

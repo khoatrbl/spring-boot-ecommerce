@@ -46,6 +46,18 @@ public class OrderController {
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
     }
 
+    @GetMapping(path = "/admin/orders")
+    public ResponseEntity<List<OrderResponse>> getAllOrdersAsAdmin(
+            @RequestParam(required = false) UUID userId,
+            @RequestParam(required = false) OrderStatus status) {
+
+        List<Orders> orders = orderService.getAllOrders(userId, status);
+
+        List<OrderResponse> orderResponses = orders.stream().map(orderMapper::toOrderResponse).toList();
+
+        return ResponseEntity.ok(orderResponses);
+    }
+
     @PatchMapping(path = "/admin/orders/{orderId}")
     public ResponseEntity<OrderResponse> updateOrderStatus(
             @PathVariable("orderId") UUID orderId,
