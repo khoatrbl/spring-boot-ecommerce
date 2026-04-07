@@ -6,6 +6,7 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.checkout.Session;
+import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,30 +42,66 @@ public class StripeWebHookController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }
 
-        // We only care if the checkout was successful
-        if ("checkout.session.completed".equals(event.getType())) {
+        log.info("Received Stripe event: id={}, type={}, apiVersion={}",
+                event.getId(), event.getType(), event.getApiVersion());
 
-            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            if (dataObjectDeserializer.getObject().isPresent()) {
-                Session session = (Session) dataObjectDeserializer.getObject().get();
+        if (!"checkout.session.completed".equals(event.getType())) {
+            return ResponseEntity.ok("Ignored event type: " + event.getType());
+        }
 
-                // 1. Extract the order_id we passed in Step 4
-                String orderIdStr = session.getMetadata().get("order_id");
+        EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+        Session session = null;
 
-                if (orderIdStr != null) {
-                    UUID orderId = UUID.fromString(orderIdStr);
-
-                    // 2. Find the Order and update the status
-                    orderRepository.findById(orderId).ifPresent(order -> {
-                        order.setStatus(OrderStatus.PAID);
-                        orderRepository.save(order);
-                        log.info("Successfully processed payment for Order: {}", orderId);
-                    });
-                }
+        if (deserializer.getObject().isPresent()) {
+            session = (Session) deserializer.getObject().get();
+            log.info("Session deserialized safely");
+        } else {
+            // Fallback when safe deserialization fails (version mismatch, etc.)
+            try {
+                session = (Session) deserializer.deserializeUnsafe();
+                log.warn("Session deserialized UNSAFELY for event {}", event.getId());
+            } catch (Exception ex) {
+                log.error("Could not deserialize checkout session. eventId={}", event.getId(), ex);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid checkout session payload");
             }
         }
 
-        // Always return 200 OK so Stripe knows we received the webhook
-        return ResponseEntity.ok().build();
+        if (session == null) {
+            log.error("Session is null after deserialization. eventId={}", event.getId());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Session missing");
+        }
+
+        String orderIdStr = null;
+
+        if (session.getMetadata() != null) {
+            orderIdStr = session.getMetadata().get("order_id");
+        }
+
+        log.info("checkout.session.completed metadata order_id={}", orderIdStr);
+
+        if (orderIdStr == null || orderIdStr.isBlank()) {
+            log.warn("Missing order_id in session metadata. eventId={}, sessionId={}", event.getId(), session.getId());
+            return ResponseEntity.ok("Missing order_id metadata");
+        }
+
+        final UUID orderId;
+        try {
+            orderId = UUID.fromString(orderIdStr);
+        } catch (IllegalArgumentException ex) {
+            log.warn("Invalid UUID in order_id metadata: {}. eventId={}", orderIdStr, event.getId());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid order_id metadata");
+        }
+
+        return orderRepository.findById(orderId)
+                .map(order -> {
+                    order.setStatus(OrderStatus.PAID);
+                    orderRepository.save(order);
+                    log.info("Order marked PAID: orderId={}, eventId={}", orderId, event.getId());
+                    return ResponseEntity.ok("Processed");
+                })
+                .orElseGet(() -> {
+                    log.warn("Order not found for order_id={}. eventId={}", orderId, event.getId());
+                    return ResponseEntity.ok("Order not found, ignored");
+                });
     }
 }

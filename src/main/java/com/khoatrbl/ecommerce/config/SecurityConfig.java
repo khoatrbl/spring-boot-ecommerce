@@ -40,6 +40,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                     .requestMatchers(HttpMethod.GET,"/api/v1/payments/success").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/payments/cancel").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/webhooks/stripe").permitAll()
                     .requestMatchers("/api/v1/me/**").authenticated()
                     .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                     .anyRequest().authenticated()
