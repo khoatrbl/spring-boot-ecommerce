@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +38,12 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll();
 
 
+    }
+
+    @Override
+    public Orders getOrderByOrderId(UUID orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order does not exist with id: " + orderId));
     }
 
     @Override
@@ -77,6 +80,7 @@ public class OrderServiceImpl implements OrderService {
                     .build();
 
             order.addOrderItem(productId, orderItem);
+
         }
 
         // After order is saved

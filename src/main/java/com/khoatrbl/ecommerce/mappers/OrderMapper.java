@@ -5,7 +5,7 @@ import com.khoatrbl.ecommerce.domain.entities.Orders;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,  uses = { OrderItemMapper.class })
 public interface OrderMapper {
 
     OrderResponse toOrderResponse(Orders orders);
