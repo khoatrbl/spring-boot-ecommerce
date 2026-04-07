@@ -1,6 +1,7 @@
 package com.khoatrbl.ecommerce.controllers;
 
 import com.khoatrbl.ecommerce.domain.dtos.ApiErrorResponse;
+import com.stripe.exception.StripeException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,5 +86,15 @@ public class ErrorController {
                 .build();
 
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(StripeException.class)
+    public ResponseEntity<ApiErrorResponse> handleStripeException(StripeException ex) {
+        ApiErrorResponse error = ApiErrorResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

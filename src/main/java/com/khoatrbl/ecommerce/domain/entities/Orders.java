@@ -77,6 +77,7 @@ public class Orders {
     }
 
     public void addOrderItem(UUID productId, OrderItem item) {
+        item.setOrders(this);
         this.items.put(productId, item);
     }
 }

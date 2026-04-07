@@ -33,7 +33,13 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
+    public BigDecimal calculateSubTotal() {
+        if (priceAtPurchase == null) {
+            return BigDecimal.valueOf(0);
+        }
 
+        return priceAtPurchase.multiply(BigDecimal.valueOf(quantity));
+    }
 
 
 }
