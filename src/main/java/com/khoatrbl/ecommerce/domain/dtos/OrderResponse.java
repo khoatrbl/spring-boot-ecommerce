@@ -17,6 +17,8 @@ import java.util.UUID;
 public class OrderResponse {
     private UUID orderId;
     private UserResponse user;
+    private String recipientName;
+    private String phoneNumber;
     private Map<UUID, OrderItemResponse> items;
     private BigDecimal total;
     private OrderStatus status;
